@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPSE Harmonize AI Engine</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <h2>CPSE <span>Harmonize AI</span></h2>
+        </div>
+        <nav class="nav-links">
+            <button class="nav-btn active" id="btn-inventory" onclick="switchTab('inventory')">Material Inventory</button>
+            <button class="nav-btn" id="btn-analytics" onclick="switchTab('analytics')">Savings Analytics</button>
+            <button class="nav-btn" id="btn-tracking" onclick="switchTab('tracking')">Requisition Tracking</button>
+            <button class="nav-btn" id="btn-scanner" onclick="switchTab('scanner')">QR Scanner</button>
+            <button class="nav-btn" id="btn-ingestion" onclick="switchTab('ingestion')">PDF Ingestion & AI Anomaly</button>
+        </nav>
+        <div class="erp-status">
+            <span class="status-dot"></span> SAP / Oracle ERP Synced
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- KPI Summary Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <h4>Total Estimated Savings</h4>
+                <div class="kpi-value text-green">₹18.4 Cr</div>
+                <div class="kpi-sub">Via Intra-CPSE Transfers</div>
+            </div>
+            <div class="kpi-card">
+                <h4>Surplus Stock Identified</h4>
+                <div class="kpi-value">₹4.2 Cr</div>
+                <div class="kpi-sub">Available across 8 CPSEs</div>
+            </div>
+            <div class="kpi-card">
+                <h4>UNSPSC AI Accuracy</h4>
+                <div class="kpi-value">96.4%</div>
+                <div class="kpi-sub">Llama 3 Harmonized</div>
+            </div>
+        </div>
+
+        <!-- Tab 1: Material Inventory -->
+        <section id="tab-inventory" class="tab-content active">
+            
+            <!-- Inventory Top Metrics Bar -->
+            <div class="inventory-stats-bar">
+                <div class="inv-stat-card">
+                    <span class="stat-label">Total Surplus Inventory Value</span>
+                    <div class="stat-value">₹48.60 Cr</div>
+                    <span class="stat-sub text-green">▲ 14.2% cataloged this month</span>
+                </div>
+                <div class="inv-stat-card">
+                    <span class="stat-label">Total Active Line Items</span>
+                    <div class="stat-value">1,420 Items</div>
+                    <span class="stat-sub">Across 12 CPSE Warehouses</span>
+                </div>
+                <div class="inv-stat-card">
+                    <span class="stat-label">Immediate Transfer Opportunities</span>
+                    <div class="stat-value">340 Items</div>
+                    <span class="stat-sub text-accent">High-Priority Matches Identified</span>
+                </div>
+                <div class="inv-stat-card">
+                    <span class="stat-label">Avg. Procurement Lead Time Saved</span>
+                    <div class="stat-value">45 Days</div>
+                    <span class="stat-sub text-green">✓ Instant Interstate Logistics</span>
+                </div>
+            </div>
+
+            <!-- Section 1: Harmonized Inventory Explorer -->
+            <div class="card full-width-card">
+                <!-- Enterprise Multi-Tier Filter Toolbar -->
+                <div class="card-header border-bottom">
+                    <div>
+                        <h3>Cross-CPSE Harmonized Inventory Explorer</h3>
+                        <p class="subtitle">Unified real-time view of idle, capital surplus, and redundant inventory across Indian Public Sector Enterprises</p>
+                    </div>
+                    <div class="actions-group">
+                        <button class="btn btn-secondary" onclick="exportToCSV()">📥 Export Master CSV</button>
+                        <button class="btn btn-primary" onclick="switchTab('ingestion')">⚡ Upload Tender / Inventory PDF</button>
+                    </div>
+                </div>
+
+                <div class="filter-toolbar">
+                    <div class="filter-item search-grow">
+                        <label>Search Inventory</label>
+                        <input type="text" id="table-search" placeholder="Search by description, UNSPSC code, OEM part number, rack location..." onkeyup="filterInventoryTable()">
+                    </div>
+                    <div class="filter-item">
+                        <label>CPSE Entity</label>
+                        <select id="cpse-filter" onchange="filterInventoryTable()">
+                            <option value="">All CPSE Organizations</option>
+                            <option value="ONGC">ONGC (Oil & Natural Gas Corp)</option>
+                            <option value="IOCL">IOCL (Indian Oil Corp)</option>
+                            <option value="NTPC">NTPC Limited</option>
+                            <option value="GAIL">GAIL India Ltd</option>
+                            <option value="BPCL">Bharat Petroleum</option>
+                            <option value="HPCL">Hindustan Petroleum</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Asset Category</label>
+                        <select id="category-filter" onchange="filterInventoryTable()">
+                            <option value="">All Material Categories</option>
+                            <option value="Valves">Industrial Valves & Fittings</option>
+                            <option value="Pumps">Pumps, Rotors & Impellers</option>
+                            <option value="Electrical">Power Cables & Transformers</option>
+                            <option value="Pipes">Piping & Tubular Goods</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Condition Grade</label>
+                        <select id="condition-filter" onchange="filterInventoryTable()">
+                            <option value="">All Conditions</option>
+                            <option value="New">Unused / Sealed</option>
+                            <option value="Refurbished">Refurbished / Tested</option>
+                            <option value="Surplus">Redundant Capital Asset</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- High-Density Master Inventory Table -->
+                <div class="table-wrapper">
+                    <table class="inventory-table master-table">
+                        <thead>
+                            <tr>
+                                <th width="14%">Holding CPSE & Warehouse</th>
+                                <th width="22%">Material Description, Spec & UNSPSC</th>
+                                <th width="10%">Condition & Aging</th>
+                                <th width="8%">Available Stock</th>
+                                <th width="14%">Commercial Valuation</th>
+                                <th width="14%">Logistics & Compliance</th>
+                                <th width="8%">AI Match Score</th>
+                                <th width="10%">Action Workflow</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body">
+                            <!-- Item 1: ONGC -->
+                            <tr>
+                                <td>
+                                    <strong class="cpse-badge cpse-ongc">ONGC Hazira</strong><br>
+                                    <span class="depot-info">Plant Code: 1102 | Bay B-14</span><br>
+                                    <small class="text-muted">Rack 08 (Bin A-12)</small>
+                                </td>
+                                <td>
+                                    <div class="item-title-wrap">
+                                        <span class="item-title">High Pressure Ball Valve 2" SS316 (3000 PSI)</span>
+                                        <span class="oem-part">OEM Part #: BV-316-2-ANSI</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <code class="unspsc-tag">UNSPSC: 40141602</code>
+                                        <button class="btn-link" onclick="openSpecModal('High Pressure Ball Valve 2 Inch SS316', 'SS316 Grade Body, 3000 PSI Rating, Flanged Ends Class 600, Hydro-tested 2025 by Lloyd Register', 'ONGC Hazira')">📄 Full Tech Spec Sheet</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag tag-new">Grade A (New Unused)</span><br>
+                                    <small class="text-muted">Storage: Indoor Stack</small><br>
+                                    <span class="aging-text">Idle Time: 14 Months</span>
+                                </td>
+                                <td>
+                                    <strong class="stock-count">45 Nos</strong><br>
+                                    <small class="text-muted">Min Lot: 1 No</small>
+                                </td>
+                                <td>
+                                    <div class="price-stack">
+                                        <span class="price-orig">Market Price: ₹85,000/unit</span>
+                                        <span class="price-transfer">Transfer Rate: ₹60,000</span>
+                                        <div class="savings-tag">Net Save: ₹11.25 Lakhs</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-sub ready">✓ Ready to Dispatch</span><br>
+                                    <span class="compliance-text">OEM Cert: Verified Valid</span><br>
+                                    <small class="text-muted">Weight: 14 kg/unit | Flatbed Freight</small>
+                                </td>
+                                <td>
+                                    <span class="badge high">98% Match</span><br>
+                                    <small class="text-muted">Exact Spec</small>
+                                </td>
+                                <td>
+                                    <button class="btn action-btn primary-action" onclick="openBorrowModal('ITEM-8902', 'High Pressure Ball Valve 2 Inch SS316', 'ONGC Hazira', 60000)">Request Transfer</button>
+                                    <button class="btn action-btn secondary-action" onclick="openSpecModal('High Pressure Ball Valve 2 Inch SS316', 'SS316 Grade Body, 3000 PSI Rating', 'ONGC Hazira')">View Specs</button>
+                                </td>
+                            </tr>
+
+                            <!-- Item 2: IOCL -->
+                            <tr>
+                                <td>
+                                    <strong class="cpse-badge cpse-iocl">IOCL Mathura</strong><br>
+                                    <span class="depot-info">Refinery Yard 03</span><br>
+                                    <small class="text-muted">Bay A-02 (Open Yard)</small>
+                                </td>
+                                <td>
+                                    <div class="item-title-wrap">
+                                        <span class="item-title">Flanged Gate Valve 4" Cast Steel (Class 150)</span>
+                                        <span class="oem-part">OEM Part #: GV-CS-4-150RF</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <code class="unspsc-tag">UNSPSC: 40141601</code>
+                                        <button class="btn-link" onclick="openSpecModal('Flanged Gate Valve 4 Inch Cast Steel', 'Cast Steel WCB Class 150, API 600 Standard, Raised Face, OS&Y Design', 'IOCL Mathura')">📄 Full Tech Spec Sheet</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag tag-refurb">Grade B (Refurbished)</span><br>
+                                    <small class="text-muted">Storage: Covered Bay</small><br>
+                                    <span class="aging-text warning-age">Idle Time: 22 Months</span>
+                                </td>
+                                <td>
+                                    <strong class="stock-count">12 Nos</strong><br>
+                                    <small class="text-muted">Min Lot: 2 Nos</small>
+                                </td>
+                                <td>
+                                    <div class="price-stack">
+                                        <span class="price-orig">Market Price: ₹1,40,000/unit</span>
+                                        <span class="price-transfer">Transfer Rate: ₹90,000</span>
+                                        <div class="savings-tag">Net Save: ₹6.00 Lakhs</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-sub inspection">⚠️ Re-Inspection Req.</span><br>
+                                    <span class="compliance-text">Hydro-Test Cert: Pending Re-Test</span><br>
+                                    <small class="text-muted">Weight: 45 kg/unit | Heavy Truck</small>
+                                </td>
+                                <td>
+                                    <span class="badge medium">89% Match</span><br>
+                                    <small class="text-muted">Substitutable</small>
+                                </td>
+                                <td>
+                                    <button class="btn action-btn primary-action" onclick="openBorrowModal('ITEM-4411', 'Flanged Gate Valve 4 Inch Cast Steel', 'IOCL Mathura', 90000)">Request Transfer</button>
+                                    <button class="btn action-btn secondary-action" onclick="openSpecModal('Flanged Gate Valve 4 Inch Cast Steel', 'Cast Steel WCB Class 150', 'IOCL Mathura')">View Specs</button>
+                                </td>
+                            </tr>
+
+                            <!-- Item 3: NTPC -->
+                            <tr>
+                                <td>
+                                    <strong class="cpse-badge cpse-ntpc">NTPC Ramagundam</strong><br>
+                                    <span class="depot-info">Thermal Unit Storehouse 01</span><br>
+                                    <small class="text-muted">Rack C (Pallet 4)</small>
+                                </td>
+                                <td>
+                                    <div class="item-title-wrap">
+                                        <span class="item-title">Centrifugal Water Pump Impeller SS304 (OD 420mm)</span>
+                                        <span class="oem-part">OEM Part #: IMP-304-420D</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <code class="unspsc-tag">UNSPSC: 40151503</code>
+                                        <button class="btn-link" onclick="openSpecModal('Centrifugal Water Pump Impeller SS304', 'SS304 Enclosed Type, Outer Diameter 420mm, Dynamic Balanced ISO 1940 G2.5 Grade', 'NTPC Ramagundam')">📄 Full Tech Spec Sheet</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag tag-new">Grade A (New Unused)</span><br>
+                                    <small class="text-muted">Storage: Wooden Crate</small><br>
+                                    <span class="aging-text">Idle Time: 08 Months</span>
+                                </td>
+                                <td>
+                                    <strong class="stock-count">08 Nos</strong><br>
+                                    <small class="text-muted">Min Lot: 1 No</small>
+                                </td>
+                                <td>
+                                    <div class="price-stack">
+                                        <span class="price-orig">Market Price: ₹2,10,000/unit</span>
+                                        <span class="price-transfer">Transfer Rate: ₹1,50,000</span>
+                                        <div class="savings-tag">Net Save: ₹4.80 Lakhs</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-sub ready">✓ Ready to Dispatch</span><br>
+                                    <span class="compliance-text">Dynamic Balancing: Passed</span><br>
+                                    <small class="text-muted">Weight: 82 kg/unit | Express Cargo</small>
+                                </td>
+                                <td>
+                                    <span class="badge high">95% Match</span><br>
+                                    <small class="text-muted">Exact Spec</small>
+                                </td>
+                                <td>
+                                    <button class="btn action-btn primary-action" onclick="openBorrowModal('ITEM-1092', 'Centrifugal Water Pump Impeller SS304', 'NTPC Ramagundam', 150000)">Request Transfer</button>
+                                    <button class="btn action-btn secondary-action" onclick="openSpecModal('Centrifugal Water Pump Impeller SS304', 'SS304 Enclosed Type OD 420mm', 'NTPC Ramagundam')">View Specs</button>
+                                </td>
+                            </tr>
+
+                            <!-- Item 4: GAIL -->
+                            <tr>
+                                <td>
+                                    <strong class="cpse-badge cpse-gail">GAIL Pata</strong><br>
+                                    <span class="depot-info">Petrochemical Depot</span><br>
+                                    <small class="text-muted">Yard Area 19 (Drum Rack)</small>
+                                </td>
+                                <td>
+                                    <div class="item-title-wrap">
+                                        <span class="item-title">Armored Heavy Duty Power Cable 11kV (3C x 240 sq mm)</span>
+                                        <span class="oem-part">OEM Part #: CAB-11KV-3C240</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <code class="unspsc-tag">UNSPSC: 26121629</code>
+                                        <button class="btn-link" onclick="openSpecModal('Armored Power Cable 11kV', 'XLPE Insulated, Heavy Duty Aluminum Conductor, Galvanized Steel Flat Strip Armored, IS 7098 Part II', 'GAIL Pata')">📄 Full Tech Spec Sheet</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag tag-new">Grade A (New Sealed)</span><br>
+                                    <small class="text-muted">Storage: Factory Wooden Drum</small><br>
+                                    <span class="aging-text">Idle Time: 05 Months</span>
+                                </td>
+                                <td>
+                                    <strong class="stock-count">500 Mtrs</strong><br>
+                                    <small class="text-muted">Min Lot: 100 Mtrs</small>
+                                </td>
+                                <td>
+                                    <div class="price-stack">
+                                        <span class="price-orig">Market Price: ₹1,800/mtr</span>
+                                        <span class="price-transfer">Transfer Rate: ₹1,200</span>
+                                        <div class="savings-tag">Net Save: ₹3.00 Lakhs</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-sub ready">✓ Ready to Dispatch</span><br>
+                                    <span class="compliance-text">Type Test Cert: Valid</span><br>
+                                    <small class="text-muted">Weight: 4.2 kg/mtr | Drum Trailer</small>
+                                </td>
+                                <td>
+                                    <span class="badge high">97% Match</span><br>
+                                    <small class="text-muted">Exact Spec</small>
+                                </td>
+                                <td>
+                                    <button class="btn action-btn primary-action" onclick="openBorrowModal('ITEM-7721', 'Armored Power Cable 11kV 3C x 240 sq mm', 'GAIL Pata', 1200)">Request Transfer</button>
+                                    <button class="btn action-btn secondary-action" onclick="openSpecModal('Armored Power Cable 11kV', 'XLPE Insulated 11kV Cable', 'GAIL Pata')">View Specs</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Pagination Bar -->
+                <div class="table-pagination">
+                    <span>Showing <strong>1-4</strong> of <strong>1,420</strong> harmonized surplus items</span>
+                    <div class="pagination-buttons">
+                        <button class="btn btn-secondary disabled">Previous</button>
+                        <button class="btn btn-secondary active-page">1</button>
+                        <button class="btn btn-secondary">2</button>
+                        <button class="btn btn-secondary">3</button>
+                        <button class="btn btn-secondary">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: AI Inter-Depot Match & Logistics Optimization Engine -->
+            <div class="card full-width-card margin-top-card">
+                <div class="card-header border-bottom">
+                    <div>
+                        <h3>AI Inter-Depot Match & Logistics Optimization Engine</h3>
+                        <p class="subtitle">Real-time geo-spatial matching to find nearest available CPSE inventory and reduce freight lead-time</p>
+                    </div>
+                    <div class="actions-group">
+                        <span class="badge-sub ready">⚡ 12 Rapid Route Matches Active</span>
+                    </div>
+                </div>
+
+                <!-- Quick Stats for Nearest Transfers -->
+                <div class="route-metrics-grid">
+                    <div class="route-metric-box">
+                        <span class="route-title">Average Distance Between Matching CPSEs</span>
+                        <div class="route-val">120 km</div>
+                        <small class="text-green">↓ Saves ~70% Freight Cost</small>
+                    </div>
+                    <div class="route-metric-box">
+                        <span class="route-title">Emergency Stock Items (High Criticality)</span>
+                        <div class="route-val">28 Line Items</div>
+                        <small class="text-accent">Available for Express Dispatch</small>
+                    </div>
+                    <div class="route-metric-box">
+                        <span class="route-title">Automated Compliance Clearance</span>
+                        <div class="route-val">94% Certified</div>
+                        <small class="text-green">✓ Ready-to-Ship Certification</small>
+                    </div>
+                </div>
+
+                <!-- High Priority Transfer Match Cards -->
+                <div class="depot-match-container">
+                    
+                    <!-- Match Card 1 -->
+                    <div class="depot-card">
+                        <div class="depot-card-header">
+                            <span class="urgency-badge urgent-high">High Priority Request</span>
+                            <span class="distance-tag">📍 45 km Away</span>
+                        </div>
+                        <div class="depot-card-body">
+                            <h4>Centrifugal Water Pump Impeller SS304</h4>
+                            <p class="match-desc">Required by: <strong>GAIL Hazira Complex</strong></p>
+                            <div class="match-route-box">
+                                <div class="route-point"><strong>Source:</strong> ONGC Hazira Plant (Yard B)</div>
+                                <div class="route-arrow">➔</div>
+                                <div class="route-point"><strong>Dest:</strong> GAIL Hazira Terminal</div>
+                            </div>
+                            <ul class="match-details-list">
+                                <li><strong>Qty Available:</strong> 08 Nos</li>
+                                <li><strong>Estimated Delivery:</strong> 6 Hours (Same Day)</li>
+                                <li><strong>Transport Method:</strong> Local Flatbed Truck</li>
+                            </ul>
+                        </div>
+                        <div class="depot-card-footer">
+                            <div class="saving-txt">Logistics Savings: <strong>₹45,000</strong></div>
+                            <button class="btn btn-primary action-btn" onclick="openBorrowModal('ITEM-1092', 'Centrifugal Water Pump Impeller SS304', 'ONGC Hazira', 150000)">Approve Fast-Track Transfer</button>
+                        </div>
+                    </div>
+
+                    <!-- Match Card 2 -->
+                    <div class="depot-card">
+                        <div class="depot-card-header">
+                            <span class="urgency-badge urgent-med">Standard Requisition</span>
+                            <span class="distance-tag">📍 180 km Away</span>
+                        </div>
+                        <div class="depot-card-body">
+                            <h4>Armored Heavy Duty Power Cable 11kV</h4>
+                            <p class="match-desc">Required by: <strong>NTPC Dadri Thermal Power Station</strong></p>
+                            <div class="match-route-box">
+                                <div class="route-point"><strong>Source:</strong> IOCL Mathura Refinery</div>
+                                <div class="route-arrow">➔</div>
+                                <div class="route-point"><strong>Dest:</strong> NTPC Dadri Plant</div>
+                            </div>
+                            <ul class="match-details-list">
+                                <li><strong>Qty Available:</strong> 500 Meters</li>
+                                <li><strong>Estimated Delivery:</strong> 24 Hours</li>
+                                <li><strong>Transport Method:</strong> Heavy Drum Trailer</li>
+                            </ul>
+                        </div>
+                        <div class="depot-card-footer">
+                            <div class="saving-txt">Logistics Savings: <strong>₹1,20,000</strong></div>
+                            <button class="btn btn-primary action-btn" onclick="openBorrowModal('ITEM-7721', 'Armored Power Cable 11kV 3C x 240 sq mm', 'IOCL Mathura', 1200)">Approve Fast-Track Transfer</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Tab 2: Analytics Graphs -->
+        <section id="tab-analytics" class="tab-content">
+            <div class="charts-grid">
+                <div class="card">
+                    <h3>CPSE-Wise Capital Savings (₹ Cr)</h3>
+                    <canvas id="savingsChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Surplus Asset Share by Category</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Requisition Workflow Tracking -->
+        <section id="tab-tracking" class="tab-content">
+            <div class="card">
+                <h3>Inter-CPSE Transfer Requisitions</h3>
+                <div class="requisition-card">
+                    <div class="req-header">
+                        <div>
+                            <strong>Req #TR-90812: SS316 High Pressure Valve</strong><br>
+                            <small class="text-muted">Target: ONGC Hazira | Destination: GAIL Hazira Terminal</small>
+                        </div>
+                        <span class="badge-sub ready">In-Transit</span>
+                    </div>
+                    <div class="stepper">
+                        <div class="step completed">1. Request Sent</div>
+                        <div class="step completed">2. ONGC Approved</div>
+                        <div class="step active">3. In-Transit Dispatch</div>
+                        <div class="step">4. Delivery & Settlement</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: QR Scanner -->
+        <section id="tab-scanner" class="tab-content">
+            <div class="card scanner-card">
+                <h3>Scan Material Barcode / QR Code</h3>
+                <div id="qr-reader" style="width: 100%; max-width: 420px; margin: 1.5rem auto;"></div>
+                <div id="scan-result" class="scan-result-box">
+                    <p id="scan-placeholder">Camera start karke QR/Barcode scan karein.</p>
+                    <div id="scan-data-content" class="hidden">
+                        <p><strong>Item:</strong> <span id="res-name">-</span></p>
+                        <p><strong>UNSPSC Code:</strong> <span id="res-unspsc">-</span></p>
+                        <p><strong>Status:</strong> <span id="res-surplus">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 5: PDF Ingestion & AI Anomaly Visualizer -->
+        <section id="tab-ingestion" class="tab-content">
+            <div class="card">
+                <h3>Upload Procurement PDF / Tender</h3>
+                <div class="dropzone" id="pdf-dropzone">
+                    <p class="dropzone-title">Drag and drop procurement invoice/tender PDF here</p>
+                    <p class="dropzone-sub">Automatic UNSPSC Mapping & Pricing Anomaly Extraction</p>
+                    <input type="file" id="pdf-file-input" accept=".pdf" style="display: none;" onchange="uploadPDF(event)">
+                    <button class="btn btn-primary" onclick="document.getElementById('pdf-file-input').click()">Browse PDF File</button>
+                </div>
+                <div id="pdf-status" class="status-msg"></div>
+
+                <!-- AI Anomaly & Duplicate Box -->
+                <div class="anomaly-section">
+                    <h4>AI Detected Pricing Anomalies & Semantic Duplicates</h4>
+                    <div class="anomaly-card warning">
+                        <div class="anomaly-title">⚠️ Price Discrepancy Flagged</div>
+                        <p>Incoming Tender lists <strong>Gate Valve 4"</strong> at <strong>₹1,40,000/unit</strong>. AI matching identified identical surplus material available at <strong>IOCL Mathura for ₹90,000/unit</strong>.</p>
+                        <strong class="text-green">Potential Saving: ₹50,000 per unit</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal 1: Inter-CPSE Transfer Request Modal -->
+    <div id="borrow-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeBorrowModal()">&times;</span>
+            <h3>Intra-CPSE Transfer Request</h3>
+            <p><strong>Item:</strong> <span id="modal-item-name"></span></p>
+            <p><strong>Holding CPSE:</strong> <span id="modal-cpse-name"></span></p>
+            <p><strong>Transfer Unit Price:</strong> ₹<span id="modal-unit-price"></span></p>
+            <div class="form-group">
+                <label>Requested Quantity:</label>
+                <input type="number" id="borrow-qty" value="1" min="1" onchange="calculateModalTotal()">
+            </div>
+            <div class="form-group">
+                <label>Destination CPSE / Facility:</label>
+                <input type="text" id="borrow-dept" placeholder="e.g. GAIL Hazira Terminal">
+            </div>
+            <p class="total-cost-box">Estimated Transfer Value: <strong>₹<span id="modal-total-price">0</span></strong></p>
+            <button class="btn btn-primary full-width" onclick="submitBorrowRequest()">Submit Transfer Requisition</button>
+        </div>
+    </div>
+
+    <!-- Modal 2: Technical Specification Sheet Modal -->
+    <div id="spec-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSpecModal()">&times;</span>
+            <h3>Technical Material Datasheet</h3>
+            <h4 id="spec-item-title" class="text-accent"></h4>
+            <p><strong>CPSE Source:</strong> <span id="spec-cpse-unit"></span></p>
+            <div class="spec-details-box">
+                <p><strong>Technical Specifications:</strong></p>
+                <p id="spec-description-text"></p>
+            </div>
+            <button class="btn btn-secondary full-width" onclick="closeSpecModal()">Close Specification</button>
+        </div>
+    </div>
+
+    <!-- Floating AI Chatbot Widget -->
+    <div class="chatbot-trigger" onclick="toggleChatbot()">
+        <span class="chat-icon">💬</span> CPSE Assistant
+    </div>
+    <div id="chatbot-box" class="chatbot-window hidden">
+        <div class="chat-header">
+            <div>
+                <h4>CPSE Harmonize AI</h4>
+                <span class="online-indicator">● Online (Ollama Llama3)</span>
+            </div>
+            <span class="close-chat" onclick="toggleChatbot()">&times;</span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">Namaste! Main CPSE Procurement Assistant hoon. UNSPSC codes aur surplus stock details ke baare me poochhein.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendChatMessage()" class="btn btn-primary">Send</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
