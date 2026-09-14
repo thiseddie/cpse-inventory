@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: cpse_match_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cpse
+      POSTGRES_PASSWORD: cpse_password
+      POSTGRES_DB: cpse_match
+    ports: ["5432:5432"]
+    volumes: [cpse_match_data:/var/lib/postgresql/data]
+volumes:
+  cpse_match_data:

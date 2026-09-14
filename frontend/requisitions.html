@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requisition Tracking - CPSE Harmonize AI</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Light Theme Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- ================= UNIFIED NAVBAR (LIGHT/DARK HEADER MATCH) ================= -->
+  <nav class="bg-[#1e293b] text-white px-6 py-3.5 flex justify-between items-center shadow-sm sticky top-0 z-50">
+    <!-- Brand Logo -->
+    <div class="flex items-center space-x-3">
+      <span class="font-bold text-xl tracking-tight text-white">
+        CPSE Harmonize AI
+      </span>
+    </div>
+
+    <!-- Navigation Links (No Underline Border) -->
+    <div class="flex items-center space-x-2 text-sm font-medium">
+      <a href="index.html" class="px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all">
+        Material Inventory
+      </a>
+      <a href="analytics.html" class="px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all">
+        Savings Analytics
+      </a>
+      <!-- Active Tab Matching Dashboard (No bottom underline line) -->
+      <a href="requisitions.html" class="px-3.5 py-2 rounded-md text-white bg-slate-700/80 font-semibold shadow-inner">
+        Requisition Tracking
+      </a>
+      <a href="qr-scanner.html" class="px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all">
+        QR Scanner
+      </a>
+      <a href="pdf-anomaly.html" class="px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all">
+        PDF Ingestion & AI Anomaly
+      </a>
+    </div>
+
+    <!-- Sync Status -->
+    <div class="flex items-center space-x-2 text-xs font-medium text-emerald-400 bg-emerald-950/40 px-3 py-1.5 rounded-full border border-emerald-800/40">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>SAP / Oracle ERP Synced</span>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN CONTENT AREA (LIGHT DASHBOARD) ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+
+    <!-- Header & Breadcrumb -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div>
+        <div class="text-xs font-medium text-slate-500 flex items-center space-x-1.5 mb-1">
+          <span>Dashboard</span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          <span class="text-blue-600 font-semibold">Requisition Tracking</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+          Inter-CPSE Asset Transfer Requisitions
+        </h1>
+        <p class="text-sm text-slate-500 mt-0.5">
+          Track, approve, and audit material transfer requisitions across public sector enterprises.
+        </p>
+      </div>
+
+      <button class="inline-flex items-center justify-center space-x-2 bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-sm transition-all active:scale-95">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Create New Requisition</span>
+      </button>
+    </div>
+
+    <!-- Overview Metrics Cards (Light Backgrounds) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Requisitions</p>
+        <p class="text-3xl font-extrabold text-slate-800 mt-2">18</p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Pending Approval</p>
+        <p class="text-3xl font-extrabold text-amber-500 mt-2">4</p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-sky-600 uppercase tracking-wider">In Transit</p>
+        <p class="text-3xl font-extrabold text-sky-500 mt-2">6</p>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Completed Transfers</p>
+        <p class="text-3xl font-extrabold text-emerald-500 mt-2">8</p>
+      </div>
+    </div>
+
+    <!-- Filter Buttons & Search Control -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+      <!-- Status Buttons -->
+      <div class="flex items-center space-x-1.5 bg-slate-200/60 p-1 rounded-lg border border-slate-300/60">
+        <button onclick="filterStatus('all')" class="status-btn active px-3.5 py-1.5 rounded-md text-xs font-semibold bg-sky-500 text-white shadow-sm transition-all">
+          All
+        </button>
+        <button onclick="filterStatus('Pending Approval')" class="status-btn px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+          Pending
+        </button>
+        <button onclick="filterStatus('In Transit')" class="status-btn px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+          In Transit
+        </button>
+        <button onclick="filterStatus('Completed')" class="status-btn px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+          Completed
+        </button>
+      </div>
+
+      <!-- Search Field -->
+      <div class="relative w-full sm:w-80">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input 
+          id="reqSearch" 
+          onkeyup="searchRequisitions()" 
+          type="text" 
+          placeholder="Search Req ID, Material, CPSE..." 
+          class="w-full bg-white border border-slate-300 text-xs text-slate-800 placeholder-slate-400 rounded-lg pl-9 pr-4 py-2 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all shadow-sm"
+        />
+      </div>
+    </div>
+
+    <!-- Table Container (Light Theme Matching Dashboard) -->
+    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-800 text-white font-semibold uppercase tracking-wider">
+            <tr>
+              <th class="px-5 py-3.5">Requisition ID</th>
+              <th class="px-5 py-3.5">Material Specs / UNSPSC</th>
+              <th class="px-5 py-3.5">Transfer Route</th>
+              <th class="px-5 py-3.5">Est. Valuation</th>
+              <th class="px-5 py-3.5">Status</th>
+              <th class="px-5 py-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reqTableBody" class="divide-y divide-slate-200 text-slate-700">
+            <!-- Row 1 -->
+            <tr class="req-row hover:bg-slate-50 transition-colors" data-status="Pending Approval">
+              <td class="px-5 py-4 font-mono font-semibold text-blue-600">REQ-2026-8891</td>
+              <td class="px-5 py-4">
+                <div class="font-bold text-slate-900">Flanged Ball Valve 100mm SS316</div>
+                <div class="text-[11px] text-slate-500 font-mono mt-0.5">UNSPSC: 40141607 (Qty: 4)</div>
+              </td>
+              <td class="px-5 py-4 font-medium text-slate-700">
+                ONGC Surat <span class="text-slate-400 mx-1">→</span> NTPC Ramagundam
+              </td>
+              <td class="px-5 py-4 font-bold text-slate-900">₹1,68,000</td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 border border-amber-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>
+                  Pending Approval
+                </span>
+              </td>
+              <td class="px-5 py-4 text-right space-x-1.5">
+                <button class="px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors border border-slate-300">Details</button>
+                <button class="px-3 py-1.5 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-colors shadow-sm">Approve</button>
+              </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr class="req-row hover:bg-slate-50 transition-colors" data-status="In Transit">
+              <td class="px-5 py-4 font-mono font-semibold text-blue-600">REQ-2026-0742</td>
+              <td class="px-5 py-4">
+                <div class="font-bold text-slate-900">11KV XLPE Armoured Power Cable</div>
+                <div class="text-[11px] text-slate-500 font-mono mt-0.5">UNSPSC: 26121603 (300 Meters)</div>
+              </td>
+              <td class="px-5 py-4 font-medium text-slate-700">
+                BHEL Haridwar <span class="text-slate-400 mx-1">→</span> IOCL Mathura
+              </td>
+              <td class="px-5 py-4 font-bold text-slate-900">₹5,55,000</td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sky-100 text-sky-800 border border-sky-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5 animate-pulse"></span>
+                  In Transit
+                </span>
+              </td>
+              <td class="px-5 py-4 text-right">
+                <button class="px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors border border-slate-300">Track Shipment</button>
+              </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr class="req-row hover:bg-slate-50 transition-colors" data-status="Completed">
+              <td class="px-5 py-4 font-mono font-semibold text-blue-600">REQ-2026-0519</td>
+              <td class="px-5 py-4">
+                <div class="font-bold text-slate-900">Centrifugal Water Pump Impeller</div>
+                <div class="text-[11px] text-slate-500 font-mono mt-0.5">UNSPSC: 40141701 (Qty: 2)</div>
+              </td>
+              <td class="px-5 py-4 font-medium text-slate-700">
+                NTPC Ramagundam <span class="text-slate-400 mx-1">→</span> SAIL Bhilai
+              </td>
+              <td class="px-5 py-4 font-bold text-slate-900">₹1,76,000</td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                  Completed
+                </span>
+              </td>
+              <td class="px-5 py-4 text-right">
+                <button class="px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors border border-slate-300">Audit Certificate</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-slate-200 px-6 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <p>© 2026 CPSE Harmonize AI. Official Inter-Enterprise Asset Transfer Portal.</p>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-slate-800 transition-colors">Procurement Rules</a>
+        <a href="#" class="hover:text-slate-800 transition-colors">Audit Logs</a>
+        <a href="#" class="hover:text-slate-800 transition-colors">Helpdesk</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    lucide.createIcons();
+
+    function filterStatus(status) {
+      const rows = document.querySelectorAll('.req-row');
+      const buttons = document.querySelectorAll('.status-btn');
+
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-sky-500', 'text-white', 'shadow-sm');
+        btn.classList.add('text-slate-600');
+      });
+      event.target.classList.add('bg-sky-500', 'text-white', 'shadow-sm');
+      event.target.classList.remove('text-slate-600');
+
+      rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        if (status === 'all' || rowStatus === status) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function searchRequisitions() {
+      const query = document.getElementById('reqSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('.req-row');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

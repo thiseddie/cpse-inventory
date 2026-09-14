@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://127.0.0.1:8000";
+const BACKEND_URL = "27.0.0.1:8http://1000";
 let html5QrcodeScanner = null;
 let currentBorrowItem = {};
 let savingsChartInstance = null;
@@ -255,4 +255,210 @@ function startScanner() {
         document.getElementById('res-unspsc').innerText = decodedText || "UNSPSC-40141602";
         document.getElementById('res-surplus').innerText = "In Stock (ONGC Hazira)";
     });
+}
+
+
+
+
+
+
+
+/**
+ * CPSE Harmonize AI - Core Application Scripts
+ * Handles AI Harmonization Engine simulation, Catalog Filtering, 
+ * and Requisition Portal Workflows.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Lucide Icons across all pages
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
+
+/* ==========================================================================
+   1. AI HARMONIZATION ENGINE (index.html)
+   ========================================================================== */
+
+/**
+ * Sets a pre-defined sample string into the AI sandbox input field.
+ * @param {string} text - Raw material sample string.
+ */
+function setSample(text) {
+    const rawInput = document.getElementById('rawInput');
+    if (rawInput) {
+        rawInput.value = text;
+        harmonizeItem();
+    }
+}
+
+/**
+ * Simulates the NLP entity extraction, vector embedding mapping, and 
+ * UNSPSC taxonomy classification pipeline.
+ */
+function harmonizeItem() {
+    const rawInput = document.getElementById('rawInput');
+    if (!rawInput) return;
+
+    const rawText = rawInput.value.trim();
+    if (!rawText) return;
+
+    const placeholder = document.getElementById('placeholderState');
+    const output = document.getElementById('outputState');
+    const confidenceBadge = document.getElementById('confidenceBadge');
+    const anomalyNote = document.getElementById('anomalyNote');
+
+    // Toggle Output Visibility
+    if (placeholder) placeholder.classList.add('hidden');
+    if (output) output.classList.remove('hidden');
+    if (confidenceBadge) confidenceBadge.classList.remove('hidden');
+    if (anomalyNote) anomalyNote.classList.remove('hidden');
+
+    const textUpper = rawText.toUpperCase();
+    const entitiesContainer = document.getElementById('outEntities');
+    if (entitiesContainer) entitiesContainer.innerHTML = '';
+
+    let unspsc = '40100000';
+    let category = 'Industrial Hardware';
+    let canonical = '';
+    let tags = [];
+
+    // Rule-based NLP entity extraction logic
+    if (textUpper.includes('VALVE')) {
+        unspsc = '40141607';
+        category = 'Fluid Distribution / Ball Valves';
+        tags = ['Item: Ball Valve', 'Type: Flanged', 'Material: SS316', 'Pressure Class: #150'];
+        canonical = 'VALVE, BALL, FLANGED, STAINLESS STEEL 316, CLASS 150';
+    } else if (textUpper.includes('PUMP') || textUpper.includes('IMPELLER')) {
+        unspsc = '40141701';
+        category = 'Rotating Equipment / Pumps & Parts';
+        tags = ['Item: Pump Impeller', 'Size: 100mm', 'Material: Cast Iron', 'Application: Water Industrial'];
+        canonical = 'IMPELLER, CENTRIFUGAL PUMP, 100MM, CAST IRON';
+    } else if (textUpper.includes('CABLE') || textUpper.includes('POWER')) {
+        unspsc = '26121600';
+        category = 'Electrical Equipment / High Voltage Cables';
+        tags = ['Item: HV Power Cable', 'Voltage: 11KV', 'Specs: XLPE Armoured', 'Cross-section: 3C x 240 SQMM'];
+        canonical = 'CABLE, POWER, HIGH VOLTAGE, 11KV, 3C X 240 SQMM, XLPE';
+    } else {
+        unspsc = '30101500';
+        category = 'Structural Raw Materials';
+        tags = ['Item: General Hardware', 'Parsed: Normalized Text', 'UNSPSC Match: Class Standard'];
+        canonical = rawText.replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase();
+    }
+
+    // Populate Fields
+    const outUnspsc = document.getElementById('outUnspsc');
+    const outCategory = document.getElementById('outCategory');
+    const outCanonical = document.getElementById('outCanonical');
+
+    if (outUnspsc) outUnspsc.innerText = unspsc;
+    if (outCategory) outCategory.innerText = category;
+    if (outCanonical) outCanonical.innerText = canonical;
+
+    // Render Badges
+    if (entitiesContainer) {
+        tags.forEach(tag => {
+            const badge = document.createElement('span');
+            badge.className = 'text-xs bg-slate-800 text-slate-300 font-mono px-2.5 py-1 rounded border border-slate-700';
+            badge.innerText = tag;
+            entitiesContainer.appendChild(badge);
+        });
+    }
+}
+
+/**
+ * Filters surplus inventory cards on index.html by category tag.
+ * @param {string} category - Category name or 'all'.
+ */
+function filterCatalog(category) {
+    const cards = document.querySelectorAll('#catalogGrid > div');
+    cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+/* ==========================================================================
+   2. REQUISITION TRACKING PORTAL (requisitions.html)
+   ========================================================================== */
+
+/**
+ * Filters requisition table rows by status tag.
+ * @param {string} status - 'all', 'Pending', 'In Transit', or 'Completed'.
+ */
+function filterStatus(status) {
+    const rows = document.querySelectorAll('.req-row');
+    rows.forEach(row => {
+        if (status === 'all' || row.getAttribute('data-status') === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Update active button state
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-slate-900', 'text-slate-300');
+    });
+
+    if (event && event.target) {
+        event.target.classList.remove('bg-slate-900', 'text-slate-300');
+        event.target.classList.add('bg-blue-600', 'text-white');
+    }
+}
+
+/**
+ * Live search filter for requisition table rows.
+ */
+function searchRequisitions() {
+    const searchInput = document.getElementById('reqSearch');
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('.req-row');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+
+/**
+ * Opens the requisition details and audit timeline modal.
+ * @param {string} reqId - Requisition ID.
+ */
+function viewDetails(reqId) {
+    const modalReqId = document.getElementById('modalReqId');
+    const detailsModal = document.getElementById('detailsModal');
+
+    if (modalReqId) modalReqId.innerText = reqId;
+    if (detailsModal) detailsModal.classList.remove('hidden');
+}
+
+/**
+ * Closes the active modal window.
+ */
+function closeModal() {
+    const detailsModal = document.getElementById('detailsModal');
+    if (detailsModal) detailsModal.classList.add('hidden');
+}
+
+/**
+ * Approves a pending inter-CPSE asset requisition.
+ * @param {string} reqId - Requisition ID.
+ */
+function approveRequisition(reqId) {
+    alert(`Requisition ${reqId} has been successfully approved!\n\nStatus changed to: In Transit.\nAudit Log Entry Recorded.`);
+    location.reload();
+}
+
+/**
+ * Open New Requisition modal or trigger form flow.
+ */
+function openNewRequisitionModal() {
+    alert('Creating a new Requisition:\n\nPlease select an item from the "Surplus Inventory Catalog" on the home page to initialize an inter-CPSE transfer requisition.');
 }

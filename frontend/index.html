@@ -14,13 +14,17 @@
         <div class="logo">
             <h2>CPSE <span>Harmonize AI</span></h2>
         </div>
-        <nav class="nav-links">
-            <button class="nav-btn active" id="btn-inventory" onclick="switchTab('inventory')">Material Inventory</button>
-            <button class="nav-btn" id="btn-analytics" onclick="switchTab('analytics')">Savings Analytics</button>
-            <button class="nav-btn" id="btn-tracking" onclick="switchTab('tracking')">Requisition Tracking</button>
-            <button class="nav-btn" id="btn-scanner" onclick="switchTab('scanner')">QR Scanner</button>
-            <button class="nav-btn" id="btn-ingestion" onclick="switchTab('ingestion')">PDF Ingestion & AI Anomaly</button>
-        </nav>
+           <nav class="nav-links">
+    <button class="nav-btn active" id="btn-inventory" onclick="switchTab('inventory')">Material Inventory</button>
+    <button class="nav-btn" id="btn-analytics" onclick="switchTab('analytics')">Savings Analytics</button>
+    
+    <!-- Link directly to requisitions.html -->
+    <a href="requisitions.html" class="nav-btn" id="btn-tracking">Requisition Tracking</a>
+    
+    <button class="nav-btn" id="btn-scanner" onclick="switchTab('scanner')">QR Scanner</button>
+    <button class="nav-btn" id="btn-ingestion" onclick="switchTab('ingestion')">PDF Ingestion & AI Anomaly</button>
+</nav>
+        
         <div class="erp-status">
             <span class="status-dot"></span> SAP / Oracle ERP Synced
         </div>
