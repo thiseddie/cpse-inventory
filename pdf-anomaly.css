@@ -1,0 +1,89 @@
+/* ==========================================================================
+   PDF INGESTION & ANOMALY DESIGN SYSTEM - CPSE HARMONIZE AI
+   ========================================================================== */
+
+.pdf-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.pdf-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.dropzone {
+  border: 2px dashed #cbd5e1;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropzone:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.btn-sample-doc {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  transition: background-color 0.15s ease;
+}
+
+.btn-sample-doc:hover {
+  background-color: #f8fafc;
+}
+
+.empty-pdf-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.risk-banner {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+}
+
+.meta-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+}
+
+.meta-label {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.meta-val {
+  display: block;
+  color: #1e293b;
+  font-size: 0.875rem;
+  margin-top: 0.15rem;
+}

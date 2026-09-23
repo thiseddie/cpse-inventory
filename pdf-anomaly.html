@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Ingestion & Anomaly Audit - CPSE Harmonize AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="pdf-anomaly.css">
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- UNIFIED NAVBAR -->
+  <nav class="navbar">
+    <div class="flex items-center space-x-3">
+      <h2>CPSE <span>Harmonize AI</span></h2>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">Material Inventory</a>
+      <a href="analytics.html" class="nav-btn">Savings Analytics</a>
+      <a href="requisitions.html" class="nav-btn">Requisition Tracking</a>
+      <a href="qr-scanner.html" class="nav-btn">QR Scanner</a>
+      <a href="pdf-anomaly.html" class="nav-btn active">PDF Ingestion</a>
+    </div>
+    <div class="erp-status">
+      <span class="status-dot"></span> SAP / Oracle ERP Synced
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="pdf-container space-y-6">
+
+    <!-- Header Section -->
+    <div class="card-header border-bottom">
+      <div>
+        <h3 class="text-xl font-bold">AI Document Ingestion & Anomaly Detector</h3>
+        <p class="subtitle">Upload procurement invoices, delivery vouchers, or PO documents to extract UNSPSC metadata and spot valuation anomalies.</p>
+      </div>
+    </div>
+
+    <!-- MAIN GRID: FILE INGESTION + PARSED AUDIT PANEL -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT PANEL: DROPZONE & SAMPLE INGESTION -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="pdf-card">
+          <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <i data-lucide="file-up" class="w-5 h-5 text-blue-600"></i> Document Upload & OCR
+          </h4>
+
+          <!-- Drag and Drop Zone -->
+          <div id="dropzone" class="dropzone" onclick="document.getElementById('pdfFileInput').click()">
+            <i data-lucide="upload-cloud" class="w-12 h-12 text-slate-400 stroke-[1.25]"></i>
+            <p class="text-sm font-semibold text-slate-700 mt-2">Click or drag PDF invoice here</p>
+            <span class="text-xs text-slate-400">Supports PDF, PNG, TIFF up to 25MB</span>
+            <input type="file" id="pdfFileInput" accept="application/pdf,image/*" class="hidden" onchange="handleFileUpload(event)">
+          </div>
+
+          <div class="relative flex py-2 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-3 text-xs text-slate-400 font-semibold uppercase">Or Try Sample Invoices</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+          </div>
+
+          <!-- Quick Test Presets -->
+          <div class="space-y-2">
+            <button onclick="parseSamplePDF('clean')" class="btn-sample-doc">
+              <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-600"></i>
+              <div class="text-left">
+                <div class="font-bold text-xs text-slate-800">Sample_ONGC_Invoice_4011.pdf</div>
+                <div class="text-[11px] text-slate-400">Valid UNSPSC & Pricing Match</div>
+              </div>
+            </button>
+
+            <button onclick="parseSamplePDF('anomaly')" class="btn-sample-doc bg-amber-50/60 border-amber-200">
+              <i data-lucide="file-warning" class="w-4 h-4 text-amber-600"></i>
+              <div class="text-left">
+                <div class="font-bold text-xs text-slate-900">Purchase_Order_BHEL_Spares.pdf</div>
+                <div class="text-[11px] text-amber-700 font-medium">⚠️ Anomaly: 42% Price Inflation Detected</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: PARSED RESULT & AI AUDIT REPORT -->
+      <div class="lg:col-span-7">
+        <div class="pdf-card">
+          <div class="flex justify-between items-center border-b pb-3 mb-4">
+            <h4 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="brain-circuit" class="w-5 h-5 text-indigo-600"></i> AI Extraction & Risk Audit
+            </h4>
+            <span id="pdfAuditStatus" class="text-xs font-mono text-slate-400">Waiting for Document</span>
+          </div>
+
+          <!-- EMPTY STATE -->
+          <div id="pdfEmptyState" class="empty-pdf-state">
+            <i data-lucide="file-search" class="w-16 h-16 text-slate-300 stroke-[1.25]"></i>
+            <p class="font-medium text-slate-500 mt-2">Upload a PDF or select a sample document to trigger automated field mapping and discrepancy checks.</p>
+          </div>
+
+          <!-- AUDIT REPORT RESULT (Hidden Initially) -->
+          <div id="pdfAuditResult" class="hidden space-y-4">
+
+            <!-- Risk Banner -->
+            <div id="riskBanner" class="risk-banner bg-emerald-50 border-emerald-200">
+              <div class="flex items-center gap-3">
+                <i id="riskIcon" data-lucide="check-circle-2" class="w-6 h-6 text-emerald-600"></i>
+                <div>
+                  <h4 id="riskTitle" class="font-bold text-sm text-emerald-900">Zero Anomalies Detected</h4>
+                  <p id="riskDesc" class="text-xs text-emerald-700">Document prices match historical GeM portal benchmarks and internal CPSE transfer ledgers.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Extracted Metadata Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div class="meta-box">
+                <span class="meta-label">Document Type</span>
+                <span id="docType" class="meta-val font-semibold">Tax Invoice</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Extracted UNSPSC</span>
+                <span id="docUnspsc" class="meta-val font-mono text-blue-600 font-bold">26121603</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Vendor / Source</span>
+                <span id="docVendor" class="meta-val">BHEL Electricals</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Document Valuation</span>
+                <span id="docPrice" class="meta-val font-mono font-bold text-slate-900">₹5,55,000</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Historical Benchmark</span>
+                <span id="docBench" class="meta-val font-mono text-slate-600">₹5,40,000</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">OCR Confidence Score</span>
+                <span id="docConfidence" class="meta-val text-emerald-600 font-bold">98.4%</span>
+              </div>
+            </div>
+
+            <!-- ERP Auto Sync Preview -->
+            <div class="bg-slate-50 p-3 rounded-md border border-slate-200">
+              <span class="text-[11px] font-bold text-slate-400 uppercase block mb-1">SAP / Oracle ERP Field Mapping Preview</span>
+              <div class="font-mono text-xs text-slate-700 space-y-1">
+                <div>> Header.PO_NUMBER: <span class="text-slate-900 font-semibold">PO-2026-99182</span></div>
+                <div>> LineItem[01].UNSPSC: <span class="text-slate-900 font-semibold">26121603 (Power Cable XLPE)</span></div>
+                <div>> LineItem[01].Qty: <span class="text-slate-900 font-semibold">500 Meters</span></div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-2">
+              <button onclick="pushToInventory()" class="btn-action-primary flex-1">
+                <i data-lucide="database-zap" class="w-4 h-4"></i> Auto-Ingest into Active Inventory
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="pdf-anomaly.js"></script>
+</body>
+</html>

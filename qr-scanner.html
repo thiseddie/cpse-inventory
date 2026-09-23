@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Asset Scanner - CPSE Harmonize AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- HTML5 QR Code Reader Library -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="qr-scanner.css">
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- UNIFIED NAVBAR -->
+  <nav class="navbar">
+    <div class="flex items-center space-x-3">
+      <h2>CPSE <span>Harmonize AI</span></h2>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">Material Inventory</a>
+      <a href="analytics.html" class="nav-btn">Savings Analytics</a>
+      <a href="requisitions.html" class="nav-btn">Requisition Tracking</a>
+      <a href="qr-scanner.html" class="nav-btn active">QR Scanner</a>
+      <a href="pdf-anomaly.html" class="nav-btn">PDF Ingestion</a>
+    </div>
+    <div class="erp-status">
+      <span class="status-dot"></span> SAP / Oracle ERP Synced
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="scanner-container space-y-6">
+
+    <!-- Header Section -->
+    <div class="card-header border-bottom">
+      <div>
+        <h3 class="text-xl font-bold">Depot QR Code & Barcode Inspector</h3>
+        <p class="subtitle">Scan physical depot tags or upload asset barcodes to fetch real-time SAP/Oracle specs and trigger surplus transfers.</p>
+      </div>
+    </div>
+
+    <!-- MAIN GRID: SCANNER + RESULTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT PANEL: CAMERA / SCANNER -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="scanner-card">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="camera" class="w-5 h-5 text-blue-600"></i> Live Optical Scanner
+            </h4>
+            <span class="status-badge live">Camera Ready</span>
+          </div>
+
+          <!-- Video Stream Box -->
+          <div id="reader" class="scanner-viewport"></div>
+
+          <!-- Manual Controls -->
+          <div class="mt-4 space-y-3">
+            <button id="toggleCamBtn" onclick="toggleCamera()" class="btn-scan-primary">
+              <i data-lucide="video" class="w-4 h-4"></i> Start Camera Scan
+            </button>
+            
+            <div class="relative flex py-1 items-center">
+              <div class="flex-grow border-t border-slate-200"></div>
+              <span class="flex-shrink mx-3 text-xs text-slate-400 font-semibold uppercase">Or Upload / Manual</span>
+              <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <!-- File Upload & Manual ID Search -->
+            <div class="grid grid-cols-2 gap-2">
+              <label class="btn-scan-secondary cursor-pointer">
+                <i data-lucide="upload" class="w-4 h-4"></i> Upload QR Image
+                <input type="file" id="qrFileInput" accept="image/*" class="hidden" onchange="scanFromFile(event)">
+              </label>
+              <button onclick="demoQuickScan('VALVE-SS316-ONGC')" class="btn-scan-secondary">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i> Demo Preset QR
+              </button>
+            </div>
+
+            <!-- Manual ID Input -->
+            <div class="flex gap-2 pt-1">
+              <input type="text" id="manualAssetId" placeholder="Enter Asset Tag ID (e.g. AST-8891)..." class="manual-input">
+              <button onclick="lookupManualId()" class="btn-search-id">Fetch</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: INSPECTION & SAP AUDIT RESULT -->
+      <div class="lg:col-span-7">
+        <div class="result-card">
+          <div class="flex justify-between items-center border-b pb-3 mb-4">
+            <h4 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i> Scanned Asset Audit & ERP Verification
+            </h4>
+            <span id="scanTimestamp" class="text-xs text-slate-400 font-mono">No active scan</span>
+          </div>
+
+          <!-- EMPTY STATE (Before Scanning) -->
+          <div id="emptyState" class="empty-scan-state">
+            <i data-lucide="qr-code" class="w-16 h-16 text-slate-300 stroke-[1.25]"></i>
+            <p class="font-medium text-slate-500 mt-2">Scan a depot asset QR tag or click "Demo Preset QR" to view real-time inventory specifications.</p>
+          </div>
+
+          <!-- DETECTED ASSET DETAILS (Hidden initially) -->
+          <div id="assetResult" class="hidden space-y-4">
+            
+            <div class="flex justify-between items-start bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span id="resCategory" class="category-chip">Valves & Fittings</span>
+                  <span id="resUnspsc" class="unspsc-chip">UNSPSC: 40141607</span>
+                </div>
+                <h3 id="resTitle" class="text-lg font-bold text-slate-900 mt-1">Flanged Ball Valve 100mm SS316</h3>
+                <p id="resDepot" class="text-xs text-slate-500 mt-0.5">Location: ONGC Hazira Plant, Gujarat (Bay 4-B)</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-400 uppercase font-bold block">Asset Valuation</span>
+                <span id="resPrice" class="text-xl font-extrabold text-emerald-600 font-mono">₹1,68,000</span>
+              </div>
+            </div>
+
+            <!-- Asset Specs Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div class="spec-box">
+                <span class="spec-label">Condition Rating</span>
+                <span id="resCondition" class="spec-value text-emerald-600 font-bold">Unused / Surplus</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Depot Stock</span>
+                <span id="resStock" class="spec-value font-mono">14 Units</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Maintenance Health</span>
+                <span id="resHealth" class="spec-value text-blue-600 font-bold">Grade A (Certified)</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">ERP Reference</span>
+                <span id="resErpRef" class="spec-value font-mono">SAP-MAT-99210</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Manufacturing Year</span>
+                <span id="resYear" class="spec-value">2024 Q3</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Carbon Impact</span>
+                <span id="resCo2" class="spec-value text-emerald-600 font-bold">-1.2 Tons CO₂</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-2">
+              <button onclick="triggerTransferFromQR()" class="btn-action-primary flex-1">
+                <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Initiate Inter-CPSE Requisition
+              </button>
+              <button onclick="printAssetTag()" class="btn-action-secondary">
+                <i data-lucide="printer" class="w-4 h-4"></i> Print Tag
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="qr-scanner.js"></script>
+</body>
+</html>

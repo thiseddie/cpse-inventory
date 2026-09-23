@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Savings Analytics - CPSE Harmonize AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN for Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="analytics.css">
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- UNIFIED NAVBAR -->
+  <nav class="navbar">
+    <div class="flex items-center space-x-3">
+      <h2>CPSE <span>Harmonize AI</span></h2>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">Material Inventory</a>
+      <a href="analytics.html" class="nav-btn active">Savings Analytics</a>
+      <a href="requisitions.html" class="nav-btn">Requisition Tracking</a>
+      <a href="qr-scanner.html" class="nav-btn">QR Scanner</a>
+      <a href="pdf-anomaly.html" class="nav-btn">PDF Ingestion</a>
+    </div>
+    <div class="erp-status">
+      <span class="status-dot"></span> SAP / Oracle ERP Synced
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container space-y-6">
+
+    <!-- Header Section -->
+    <div class="card-header border-bottom">
+      <div>
+        <h3 class="text-xl font-bold">Inter-Enterprise Savings & Sustainability Analytics</h3>
+        <p class="subtitle">Real-time monetary savings, procurement cost avoidance, and CO₂ carbon offset metrics.</p>
+      </div>
+      <div class="actions-group">
+        <button class="btn btn-primary flex items-center gap-2" onclick="window.print()">
+          <i data-lucide="download" class="w-4 h-4"></i> Export ESG Report
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI STATS CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Value Transferred</span>
+        <div class="text-2xl font-bold text-slate-800 mt-2">₹4.82 Cr</div>
+        <div class="text-xs text-emerald-600 font-medium mt-1">↑ 18.4% from last quarter</div>
+      </div>
+      
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Procurement Cost Saved</span>
+        <div class="text-2xl font-bold text-emerald-600 mt-2">₹1.45 Cr</div>
+        <div class="text-xs text-slate-500 mt-1">Direct CAPEX Avoidance</div>
+      </div>
+
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Carbon Footprint Saved</span>
+        <div class="text-2xl font-bold text-indigo-600 mt-2">142.5 MT</div>
+        <div class="text-xs text-indigo-500 font-medium mt-1">CO₂ Emissions Avoided</div>
+      </div>
+
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Inventory Turnover Days</span>
+        <div class="text-2xl font-bold text-blue-600 mt-2">34 Days</div>
+        <div class="text-xs text-emerald-600 font-medium mt-1">↓ 12 days optimization</div>
+      </div>
+    </div>
+
+    <!-- CHARTS SECTION -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Chart 1: Monthly Cost Avoidance Trend -->
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <h4 class="font-bold text-slate-700 mb-4">Monthly Procurement Savings Trend (2026)</h4>
+        <div class="relative h-64">
+          <canvas id="savingsTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Category Breakdown -->
+      <div class="card bg-white p-5 border rounded-lg shadow-sm">
+        <h4 class="font-bold text-slate-700 mb-4">Surplus Transfer by Category</h4>
+        <div class="relative h-64 flex justify-center">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INTER-CPSE MATRIX TABLE -->
+    <div class="card bg-white border rounded-lg shadow-sm p-5">
+      <h3 class="font-bold text-slate-800 text-lg mb-3">Inter-CPSE Value Flow Matrix</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-slate-600">
+          <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+            <tr>
+              <th class="py-3 px-4">Source CPSE</th>
+              <th class="py-3 px-4">Destination CPSE</th>
+              <th class="py-3 px-4">Major Asset Transferred</th>
+              <th class="py-3 px-4">Transferred Value</th>
+              <th class="py-3 px-4">ESG Impact</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-800">ONGC</td>
+              <td class="py-3 px-4">NTPC</td>
+              <td class="py-3 px-4">SS316 Flanged Ball Valves</td>
+              <td class="py-3 px-4 font-mono font-bold text-emerald-600">₹38,40,000</td>
+              <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-semibold">-24.2 Tons CO₂</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-800">BHEL</td>
+              <td class="py-3 px-4">IOCL</td>
+              <td class="py-3 px-4">11KV XLPE Armoured Cables</td>
+              <td class="py-3 px-4 font-mono font-bold text-emerald-600">₹62,10,000</td>
+              <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-semibold">-48.1 Tons CO₂</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-800">GAIL</td>
+              <td class="py-3 px-4">BPCL</td>
+              <td class="py-3 px-4">High-Pressure Seamless Piping</td>
+              <td class="py-3 px-4 font-mono font-bold text-emerald-600">₹27,50,000</td>
+              <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-semibold">-19.5 Tons CO₂</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SCRIPT FOR CHARTS -->
+  <script>
+    lucide.createIcons();
+
+    // 1. Line Chart - Savings Trend
+    const ctxTrend = document.getElementById('savingsTrendChart').getContext('2d');
+    new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        datasets: [{
+          label: 'Savings (in Lakhs ₹)',
+          data: [12, 19, 15, 25, 22, 30, 38, 42, 48],
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // 2. Doughnut Chart - Category Breakdown
+    const ctxCat = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctxCat, {
+      type: 'doughnut',
+      data: {
+        labels: ['Electrical Cables', 'Valves & Fittings', 'Pipes & Tubing', 'Heavy Machinery', 'Turbines/Spares'],
+        datasets: [{
+          data: [35, 25, 20, 12, 8],
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#64748b']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  </script>
+</body>
+</html>
